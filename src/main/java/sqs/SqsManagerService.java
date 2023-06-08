@@ -33,21 +33,12 @@ public class SqsManagerService {
                 .maxNumberOfMessages(10)
                 .build();
 
-        List<Message> messages = sqsClient.receiveMessage(receiveMessageRequest).messages();
+        List<Message> messages = sqsManager.receiveMessage();
 
         messages.forEach(message -> {
             System.out.println(message.body());
         });
 
-        messages.forEach(message -> {
-            System.out.println("Deletando a mensagem " + message.messageId());
-            DeleteMessageRequest deleteMessageRequest = DeleteMessageRequest.builder()
-                    .queueUrl(queueUrl)
-                    .receiptHandle(message.receiptHandle())
-                    .build();
-            sqsClient.deleteMessage(deleteMessageRequest);
-        });
-
-        sqsClient.close();
+        messages.forEach(sqsManager::deleteMessage);
     }
 }
